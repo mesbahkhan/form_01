@@ -1,0 +1,14 @@
+﻿graph 
+[ node
+  [ id 0  
+    label "January"
+  ]
+  node
+  [ id 1
+    label "December"
+  ]
+  edge
+  [ source 1
+    target 0
+  ]        
+]

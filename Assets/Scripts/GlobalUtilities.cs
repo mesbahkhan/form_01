@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine;
 
-public static class GlobalUtilities { 
+
+public static class GlobalUtilities {
+
     public static bool ReportIssue()
         {
             Debug.Log("issue at mouse position");

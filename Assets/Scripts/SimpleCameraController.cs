@@ -6,7 +6,7 @@ namespace UnityTemplateProjects
     public class SimpleCameraController : MonoBehaviour
     {
 
-        private Camera cam;
+        private Camera camera;
         Ray ray;
         RaycastHit hit;
         public GameObject prefab;
@@ -18,7 +18,7 @@ namespace UnityTemplateProjects
 
         void Start()
         {
-            cam = Camera.main;
+            camera = Camera.main;
         }
 
         class CameraState
@@ -211,12 +211,12 @@ namespace UnityTemplateProjects
             // Get the mouse position from Event.
             // Note that the y position from Event is inverted.
             mousePos.x = currentEvent.mousePosition.x;
-            mousePos.y = cam.pixelHeight - currentEvent.mousePosition.y;
+            mousePos.y = camera.pixelHeight - currentEvent.mousePosition.y;
 
-            point = cam.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, cam.nearClipPlane));
+            point = camera.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, camera.nearClipPlane));
 
             GUILayout.BeginArea(new Rect(20, 20, 250, 120));
-            GUILayout.Label("Screen pixels: " + cam.pixelWidth + ":" + cam.pixelHeight);
+            GUILayout.Label("Screen pixels: " + camera.pixelWidth + ":" + camera.pixelHeight);
             GUILayout.Label("Mouse position: " + mousePos);
             GUILayout.Label("World position: " + point.ToString("F3"));
             GUILayout.EndArea();

@@ -3,3 +3,27 @@
 ################################################################################
 
 /Logs/AssetImportWorker0-prev.log
+/Logs/AssetImportWorker0.log
+/Logs/Packages-Update.log
+/obj/Debug/UnityEngine.UI.Player.csprojAssemblyReference.cache
+/obj/Debug/UnityEngine.UI.csprojAssemblyReference.cache
+/obj/Debug/UnityEngine.TestRunner.Player.csprojAssemblyReference.cache
+/obj/Debug/UnityEngine.TestRunner.csprojAssemblyReference.cache
+/obj/Debug/UnityEditor.TestRunner.csprojAssemblyReference.cache
+/obj/Debug/Unity.VSCode.Editor.csprojAssemblyReference.cache
+/obj/Debug/Unity.VisualStudio.Editor.csprojAssemblyReference.cache
+/obj/Debug/Unity.Timeline.Player.csprojAssemblyReference.cache
+/obj/Debug/Unity.Timeline.csprojAssemblyReference.cache
+/obj/Debug/Unity.TextMeshPro.Player.csprojAssemblyReference.cache
+/obj/Debug/Unity.TextMeshPro.csprojAssemblyReference.cache
+/obj/Debug/Unity.Rider.Editor.csprojAssemblyReference.cache
+/obj/Debug/Unity.Postprocessing.Runtime.Player.csprojAssemblyReference.cache
+/obj/Debug/Unity.Postprocessing.Runtime.csprojAssemblyReference.cache
+/obj/Debug/Unity.Postprocessing.Editor.csprojAssemblyReference.cache
+/obj/Debug/Unity.CollabProxy.Editor.csprojAssemblyReference.cache
+/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
+/obj/Debug/Assembly-CSharp.Player.csprojAssemblyReference.cache
+/obj/Debug/Assembly-CSharp.csprojAssemblyReference.cache
+/obj/Debug/Assembly-CSharp-Editor.csprojAssemblyReference.cache
+/.vsconfig
+/.vs/form_01
