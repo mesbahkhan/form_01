@@ -4,7 +4,7 @@ using UnityEngine;
 public class ShapesManager : MonoBehaviour
 {
     [SerializeField]
-    GameObject activePlane;
+    public GameObject activePlane;
     [SerializeField]
     ClassShape classShapePrefab;
     [SerializeField]
@@ -17,6 +17,9 @@ public class ShapesManager : MonoBehaviour
     Shape selectedShape;
 
     List<Shape> dispatchedToDeletionShapes = new List<Shape>();
+
+    public GameObject ActivePlane { get => activePlane; internal set => activePlane = value; }
+    public int LayerNo { get; internal set; }
 
     public enum ConnectorType
     {
@@ -78,6 +81,9 @@ public class ShapesManager : MonoBehaviour
         shapes = new List<Shape>();
     }
 
+
+
+
     public void CreateClassShape()
     {
         var newShapeObj = GameObject.Instantiate(classShapePrefab, activePlane.transform);
@@ -87,6 +93,7 @@ public class ShapesManager : MonoBehaviour
         shapes.Add(newShape);
 
         newShape.name = $"ClassShape{shapes.Count}";
+        newShape.LayerNo = LayerNo;
     }
 
     public void SetLinkConnectorState()

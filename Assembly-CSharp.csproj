@@ -58,19 +58,22 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Graphs\GraphCamera.cs" />
     <Compile Include="Assets\Scripts\Actions\DrawShape.cs" />
+    <Compile Include="Assets\Scripts\Cameras\ZoomAndPanCamera.cs" />
     <Compile Include="Assets\Scripts\Graphs\Nodes.cs" />
     <Compile Include="Assets\Scripts\Actions\ShapeConnector.cs" />
     <Compile Include="Assets\Scripts\Graphs\Graph.cs" />
     <Compile Include="Assets\Scripts\Shapes\Shape.cs" />
     <Compile Include="Assets\Scripts\_Trash\BoxBehaviour.cs" />
+    <Compile Include="Assets\Scripts\Graphs\Edges.cs" />
     <Compile Include="Assets\Scripts\GlobalUtilities.cs" />
     <Compile Include="Assets\Scripts\Shapes\ConnectionShape.cs" />
-    <Compile Include="Assets\Scripts\SimpleCameraController.cs" />
+    <Compile Include="Assets\Scripts\Cameras\SimpleCameraController.cs" />
     <Compile Include="Assets\Scripts\LayersManager.cs" />
     <Compile Include="Assets\Scripts\Shapes\ClassShape.cs" />
     <Compile Include="Assets\Scripts\Actions\ShapesManager.cs" />
     <Compile Include="Assets\Scripts\Actions\ShapeMover.cs" />
     <Compile Include="Assets\Scripts\Actions\ShapeSelector.cs" />
+    <Compile Include="Assets\Scripts\Layer\LayerSwitcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

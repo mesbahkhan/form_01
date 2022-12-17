@@ -5,6 +5,10 @@ using UnityEngine;
 
 public class Shape : MonoBehaviour
 {
+    [SerializeField]
+    int layerNo;
+    public int LayerNo { get => layerNo; set => layerNo = value; }
+
     List<ConnectionShape> connections;
     ShapesManager manager;
 

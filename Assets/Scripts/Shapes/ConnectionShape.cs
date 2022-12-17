@@ -5,10 +5,20 @@ using UnityEngine;
 
 public class ConnectionShape : Shape
 {
-    private GameObject startShapeObj;
-    private GameObject finalShapeObj;
-    private Shape startShape;
-    private Shape finalShape;
+    protected GameObject startShapeObj;
+    protected GameObject finalShapeObj;
+    protected Shape startShape;
+    protected Shape finalShape;
+
+    public Shape StartShape => startShape;
+    public Shape FinalShape => finalShape;
+
+    [SerializeField]
+    Color normalColor = Color.blue;
+    [SerializeField]
+    Color selectedColor = Color.yellow;
+    [SerializeField]
+    Color highlightedColor = Color.red;
 
     LineRenderer line;
 
@@ -19,13 +29,15 @@ public class ConnectionShape : Shape
     public override void CleanUp()
     {
         base.CleanUp();
-        startShape.RemoveConnection(this);
-        finalShape.RemoveConnection(this);
+        if (startShape != null)
+            startShape.RemoveConnection(this);
+        if (finalShape != null)
+            finalShape.RemoveConnection(this);
     }
 
     private void Start()
     {
-        line = GetComponent<LineRenderer>(); 
+        line = GetComponent<LineRenderer>();
     }
 
     internal void SetStartShape(GameObject firstConnectionShape)
@@ -44,29 +56,48 @@ public class ConnectionShape : Shape
 
     private void Update()
     {
+        UpdateConnectionShape();
+    }
+
+    protected virtual void UpdateConnectionShape()
+    {
         if ((line == null) || (startShapeObj == null) || (finalShapeObj == null))
             return;
 
         //TODO: Make it as message and save cpu cycles
         if ((line.GetPosition(0) != startShapeObj.transform.position) ||
-            (line.GetPosition(1) != finalShapeObj.transform.position))
+            (line.GetPosition(line.positionCount - 1) != finalShapeObj.transform.position))
         {
-            line.SetPosition(0, startShapeObj.transform.position);
-            line.SetPosition(1, finalShapeObj.transform.position);
+            var startPos = startShapeObj.transform.position;
+            startPos.z += 0.1f;
+            var endPos = finalShapeObj.transform.position;
+            endPos.z += 0.1f;
+
+            line.SetPosition(0, startPos);
+            line.SetPosition(line.positionCount - 1, endPos);
+
             PlaceCollider(startShapeObj.transform.position, finalShapeObj.transform.position, Collider);
         }
+
+        //TODO: Make color changes as subscribtion event (to increase performance when many shapes exists)
+        var newColor = normalColor;
+        if ((Manager.SelectedShape != null) && (Manager.SelectedShape.gameObject == gameObject))
+            newColor = selectedColor;
+
+        line.startColor = line.endColor = newColor;
     }
 
-    public void CreateCollider(GameObject first, GameObject second)
+    public virtual void CreateCollider(GameObject first, GameObject second)
     {
         var startPos = first.transform.position;
         var endPos = second.transform.position;
+
 
         var objCollider = new GameObject("Collider");
         BoxCollider col = objCollider.AddComponent<BoxCollider>();
         col.transform.parent = transform; // Collider is added as child object of line
 
-        var selector = objCollider.AddComponent<ShapeSelector>();
+        ShapeSelector selector = CreateShapeSelector(objCollider);
         selector.ParentShape = this;
         selector.Manager = Manager;
 
@@ -75,27 +106,94 @@ public class ConnectionShape : Shape
         PlaceCollider(startPos, endPos, col);
     }
 
-    private static void PlaceCollider(Vector3 startPos, Vector3 endPos, BoxCollider col)
+    protected virtual ShapeSelector CreateShapeSelector(GameObject objCollider)
+    {
+        return objCollider.AddComponent<ShapeSelector>();
+    }
+
+    protected static void PlaceCollider(Vector3 startPos, Vector3 endPos, BoxCollider col)
     {
         if (col == null)
             return;
 
-        float lineLength = Vector3.Distance(startPos, endPos); // length of line
-        col.size = new Vector3(lineLength, 0.1f, 1f); // size of collider is set where X is length of line, Y is width of line, Z will be set as per requirement
+        const float shiftFromEnds = 1.0f;
 
         Vector3 midPoint = (startPos + endPos) / 2;
-        col.transform.position = midPoint; // setting position of collider object
 
-        // Following lines calculate the angle between startPos and endPos
-        float angle = (Mathf.Abs(startPos.y - endPos.y) / Mathf.Abs(startPos.x - endPos.x));
+        col.transform.position = midPoint + Vector3.forward * .5f; // setting position of collider object
 
-        if ((startPos.y < endPos.y && startPos.x > endPos.x) || (endPos.y < startPos.y && endPos.x > startPos.x))
+        float lineLength = Vector3.Distance(startPos, endPos); // length of line
+
+        col.size = new Vector3(lineLength - shiftFromEnds, .25f, .25f); // size of collider is set where X is length of line, Y is width of line, Z will be set as per requirement
+
+
+        var dir = endPos - startPos;
+        col.transform.rotation = Quaternion.FromToRotation(Vector3.up, dir);
+
+        var rotation = col.transform.rotation;
+        rotation *= Quaternion.Euler(0, 0, 90);
+        col.transform.rotation = rotation;
+    }
+
+    /// <summary>
+    /// Find bounding box containing each connection points
+    /// </summary>
+    /// <returns></returns>
+    internal virtual Rect BoundingBox()
+    {
+        var bbox = new Rect();
+
+        if (line == null)
+            return bbox;
+
+        Vector3[] positions = new Vector3[line.positionCount];
+        var positionCount = line.GetPositions(positions);
+
+        var pos = line.GetPosition(0);
+        bbox.xMin = pos.x;
+        bbox.yMin = pos.y;
+        bbox.xMax = pos.x;
+        bbox.yMax = pos.y;
+
+        for (int i = 1; i < positions.Length; i++)
         {
-            angle *= -1;
+            pos = line.GetPosition(i);
+
+            if (bbox.xMin > pos.x) bbox.xMin = pos.x;
+            if (bbox.xMax < pos.x) bbox.xMax = pos.x;
+            if (bbox.yMin > pos.x) bbox.yMin = pos.y;
+            if (bbox.yMax < pos.x) bbox.yMax = pos.y;
         }
 
-        angle = Mathf.Rad2Deg * Mathf.Atan(angle);
+        return bbox;
+    }
 
-        col.transform.eulerAngles = new Vector3(0, 0, angle);
+    internal Vector3 GetPosition(int num)
+    {
+        if (line == null)
+        {
+            line = GetComponent<LineRenderer>();
+            if (line == null)
+                return Vector3.zero;
+        }
+
+        return line.GetPosition(num);
+    }
+
+    internal virtual void AddNode(Vector3 newNode)
+    {
+        if (line == null)
+        {
+            line = GetComponent<LineRenderer>();
+            if (line == null)
+                return;
+        }
+
+        //Add new node before last one
+        line.positionCount += 1;
+        line.SetPosition(line.positionCount - 1, line.GetPosition(line.positionCount - 2));
+        line.SetPosition(line.positionCount - 2, newNode);
+
+        //TODO: Add manager shape for node (rectangle)
     }
 }

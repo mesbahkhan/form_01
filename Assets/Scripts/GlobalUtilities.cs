@@ -12,11 +12,13 @@ public static class GlobalUtilities {
 
         }
 
-    public static GameObject ReturnClickedObject(out RaycastHit hit)
+    public static GameObject ReturnClickedObject(
+        out RaycastHit hit)
     {
         GameObject targetObject = null;
 
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Ray ray = 
+            Camera.main.ScreenPointToRay(Input.mousePosition);
 
         bool targetWasHit = Physics.Raycast(
             ray.origin,
@@ -27,6 +29,7 @@ public static class GlobalUtilities {
         {
             targetObject = hit.collider.gameObject;
         }
+
         return targetObject;
     }
 

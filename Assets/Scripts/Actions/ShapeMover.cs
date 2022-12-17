@@ -1,17 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ShapeMover : MonoBehaviour
 {
     [SerializeField]
-    Color normalColor = Color.yellow;
+    Color normalColor = Color.white;
 
     [SerializeField]
-    Color highlightColor = Color.green;
+    Color highlightColor = Color.yellow;
 
-    Camera mainCamera;
+    Camera frontCamera;
     SpriteRenderer sprite;
+
+    string frontCameraTag = "FrontCam";
 
     bool isMouseOver = false;
     bool isDragging = false;
@@ -21,7 +24,12 @@ public class ShapeMover : MonoBehaviour
     void Start()
     {
         Debug.Log("Shape Mover Starting");
-        mainCamera = Camera.main;
+
+        if (frontCamera == null)
+            frontCamera = 
+                Camera.allCameras.Where(
+                    c => c.CompareTag(frontCameraTag)).
+                        FirstOrDefault();
 
         sprite = GetComponent<SpriteRenderer>();       
 
@@ -50,11 +58,11 @@ public class ShapeMover : MonoBehaviour
         {
             Debug.Log("Shape Mover in Dragging");
             var screenPosition = 
-                mainCamera.
+                frontCamera.
                     WorldToScreenPoint(
                         transform.position);
 
-             var currentPosition = mainCamera.ScreenToWorldPoint(
+             var currentPosition = frontCamera.ScreenToWorldPoint(
                 new Vector3(
                         Input.mousePosition.x, 
                         Input.mousePosition.y, 

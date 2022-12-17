@@ -1,13 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class Graph : MonoBehaviour
 {
 
   public TextAsset file;
-  public GameObject nodepf;
-  public GameObject edgepf; 
+  public GameObject nodePreFab;
+  public GameObject edgePreFab; 
+
   public float width;
   public float length;
   public float height;
@@ -16,25 +16,32 @@ public class Graph : MonoBehaviour
     {
 		
 	if (file==null){
+
 		InstantialDefaultGraph();		
+
       } else {	
-		LoadGMLFromFile(file);
+
+		LoadGMLFromFile(
+			file);
+
       }      
     }
 
     void Update(){}
 
-    void LoadGMLFromFile(TextAsset f){
+    void LoadGMLFromFile(
+		TextAsset gmlFileName){
 
-      string[] lines = f.text.Split('\n');
+      string[] lines = gmlFileName.text.Split('\n');
 
       int currentobject = -1; // 0 = graph, 1 = node, 2 = edge
 
       int stage = -1; // 0 waiting to open, 1 = waiting for attribute, 2 = waiting for id, 3 = waiting for label, 4 = waiting for source, 5 = waiting for target
 
-      Nodes n = null;
+      Nodes node = null;
 
-      Dictionary<string,Nodes> nodes = new Dictionary<string,Nodes>();
+      Dictionary<string,Nodes> nodes = 
+			new Dictionary<string,Nodes>();
 
       foreach (string line in lines){
 
@@ -64,10 +71,7 @@ public class Graph : MonoBehaviour
 
 		  if (word == "[" && stage == 0 && currentobject == 1){
 			stage = 1;
-			GameObject go = Instantiate(nodepf, new Vector3(Random.Range(-width/2, width/2), Random.Range(-length/2, length/2), Random.Range(-height/2, height/2)), Quaternion.identity);
-			n = go.GetComponent<Nodes>();
-			n.transform.parent = transform;
-			n.SetEdgePrefab(edgepf);
+					node = CreateNode("");			
 			continue;
 		  }
 
@@ -86,13 +90,15 @@ public class Graph : MonoBehaviour
 		  }
 
 		  if (stage == 2){
-			nodes.Add(word, n);
+
+			nodes.Add(word, node);
+
 			stage = 1;
 			break;
 		  }
 
 		  if (stage == 3){
-			n.name = word;
+			node.SetName(word);			
 			stage = 1;
 			break;
 		  }
@@ -108,13 +114,15 @@ public class Graph : MonoBehaviour
 		  }
 
 		  if (stage == 4){
-			n = nodes[word];
+			node = nodes[word];
 			stage = 1;
 			break;
 		  }
 
 		  if (stage == 5){
-			n.AddEdge(nodes[word]);
+			node.AddEdge(
+				edgePreFab,
+				nodes[word]);
 			stage = 1;
 			break;
 		  }
@@ -122,41 +130,74 @@ public class Graph : MonoBehaviour
       }
     }
     
-	void InstantialDefaultGraph() {
-		// instantiate A, B, C, D, E
-		GameObject A = Instantiate(nodepf, new Vector3(Random.Range(-width/2, width/2), Random.Range(-length/2, length/2), Random.Range(-height/2, height/2)), Quaternion.identity);
-	GameObject B = Instantiate(nodepf, new Vector3(Random.Range(-width / 2, width / 2), Random.Range(-length / 2, length / 2), Random.Range(-height / 2, height / 2)), Quaternion.identity);
-	GameObject C = Instantiate(nodepf, new Vector3(Random.Range(-width / 2, width / 2), Random.Range(-length / 2, length / 2), Random.Range(-height / 2, height / 2)), Quaternion.identity);
-	GameObject D = Instantiate(nodepf, new Vector3(Random.Range(-width / 2, width / 2), Random.Range(-length / 2, length / 2), Random.Range(-height / 2, height / 2)), Quaternion.identity);
-	GameObject E = Instantiate(nodepf, new Vector3(Random.Range(-width / 2, width / 2), Random.Range(-length / 2, length / 2), Random.Range(-height / 2, height / 2)), Quaternion.identity);
+	void InstantialDefaultGraph()
+    {
 
-	// make nodes children of graph object
+        // instantiate A, B, C, D, E
+        Nodes AS =
+		   CreateNode("node A");
 
-	A.transform.parent = transform;
-	B.transform.parent = transform;
-	C.transform.parent = transform;
-	D.transform.parent = transform;
-	E.transform.parent = transform;
+        Nodes BS =
+		   CreateNode("node B");
 
-	// change name
-	A.name = "node A"; 
-	B.name = "node B";
-	C.name = "node C";
-	D.name = "node D";
-	E.name = "node E";
+        Nodes CS =
+			CreateNode("node C");
 
-	// get script instances
-	Nodes AS = A.GetComponent<Nodes>();
-	Nodes BS = B.GetComponent<Nodes>();
-	Nodes CS = C.GetComponent<Nodes>();
-	Nodes DS = D.GetComponent<Nodes>();
-	Nodes ES = E.GetComponent<Nodes>();
+        Nodes DS =
+			CreateNode("node D");
 
-	// add edges      
-	AS.SetEdgePrefab(edgepf); AS.AddEdge(BS);
-	AS.AddEdge(CS);
-	CS.SetEdgePrefab(edgepf); CS.AddEdge(DS); 
-	DS.SetEdgePrefab(edgepf); DS.AddEdge(ES);
-	DS.AddEdge(AS);
+        Nodes ES =
+			CreateNode("node E");
+	
+
+		AddEdge(AS, BS);
+
+		AddEdge(AS, CS);
+
+		AddEdge(CS, DS);
+
+		AddEdge(DS, ES);
+
+		AddEdge(DS, AS);
+
 	}
+
+	private Nodes CreateNode(
+		string nodeName)
+    {
+
+        GameObject node = Instantiate(
+                    nodePreFab,
+                    new Vector3(
+                        Random.Range(-width / 2, width / 2),
+                        Random.Range(-length / 2, length / 2),
+                        Random.Range(-height / 2, height / 2)),
+                    Quaternion.identity);
+
+        // make nodes children of graph object
+
+        node.transform.parent = transform;
+
+		node.name = nodeName;
+
+        // get script instances
+
+        Nodes nodeObject = node.GetComponent<Nodes>();
+
+		return nodeObject;
+
+
+
+    }
+
+    private void AddEdge(
+		Nodes nodePlace1, 
+		Nodes nodePlace2)
+    {
+        // add edges      
+
+        nodePlace1.AddEdge(
+            edgePreFab,
+            nodePlace2);
+    }
 }
